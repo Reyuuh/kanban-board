@@ -1,22 +1,20 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import {Task} from './models/task.model.js'
+import { Task } from './models/tasks.model.js'
+import { tasksRouter } from './routes/tasks.routes.js';
 
 const app = express();
 
 app.use(express.json());
 
-//routes
 
-app.get('/api/health', (_req , res) => {
-    res.json({ok: true});
+app.get('/api/health', (_req, res) => {
+    res.json({ ok: true });
 });
 
 
-app.get ('/api/tasks', async (_req, res) => {
-    const tasks = await Task.find();
-    res.json(tasks);
-});
+app.use('/api/tasks', tasksRouter);
+
 
 
 const uri = process.env.MONGODB_URI;
