@@ -1,9 +1,14 @@
+import cors from 'cors'
+import helmet from 'helmet'
+import type {ErrorRequestHandler} from 'express'
 import express from 'express'
 import mongoose from 'mongoose'
-import { Task } from './models/tasks.model.js'
 import { tasksRouter } from './routes/tasks.routes.js';
 
 const app = express();
+
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173'}));
 
 app.use(express.json());
 
@@ -14,6 +19,28 @@ app.get('/api/health', (_req, res) => {
 
 
 app.use('/api/tasks', tasksRouter);
+
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+    if (err instanceof mongoose.Error.CastError) {
+        res.status(400).json({ error: 'Ogiltig id'});
+        return;
+    }
+    if (err instanceof mongoose.Error.ValidationError) {
+        res.status(400).json({ error: err.message })
+        return;
+    }
+    if (err.status === 400) {
+        res.status(400).json({ error: 'Ogiltig JSON'});
+        return;
+    }
+    console.error(err);
+    res.status(500).json({error: 'Något gick fel på servern'})
+
+}
+
+app.use(errorHandler);
+
+
 
 
 
@@ -26,6 +53,7 @@ if (!uri) {
 await mongoose.connect(uri);
 console.log('Ansluten till MongoDb');
 
-app.listen(3000, () => {
-    console.log('API lyssnar på http://localhost:3000');
+const port = Number(process.env.PORT ?? 3000);
+app.listen(port, () => {
+    console.log(`API lyssnar på http://localhost:${port}`);
 });
