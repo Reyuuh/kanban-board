@@ -8,7 +8,7 @@ import { tasksRouter } from './routes/tasks.routes.js';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173'}));
+app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:4200'}));
 
 app.use(express.json());
 

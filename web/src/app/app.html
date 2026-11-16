@@ -1,0 +1,10 @@
+<h1>Tasks</h1>
+<ul>
+  @for (task of tasks(); track task.id) {
+    <li>{{ task.title }} — {{ task.status }}</li>
+  } @empty {
+    <li>No tasks yet</li>
+  }
+</ul>
+
+<router-outlet />
